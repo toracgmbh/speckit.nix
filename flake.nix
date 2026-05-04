@@ -21,6 +21,11 @@
       inputs.uv2nix.follows = "uv2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    speckit = {
+      url = "github:github/spec-kit";
+      flake = false;
+    };
   };
 
   outputs =
@@ -29,13 +34,14 @@
       pyproject-nix,
       uv2nix,
       pyproject-build-systems,
+      speckit,
       ...
     }:
     let
       inherit (nixpkgs) lib;
       forAllSystems = lib.genAttrs lib.systems.flakeExposed;
 
-      workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ./.; };
+      workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = speckit; };
 
       overlay = workspace.mkPyprojectOverlay {
         sourcePreference = "wheel";
