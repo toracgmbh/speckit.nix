@@ -1,0 +1,6 @@
+# Protect codeowners file
+/.github/CODEOWNERS @toracgmbh/developer
+# Main developers
+* @toracgmbh/developer
+# Updates to dependencies (Dependabot)
+/*.lock @toracgmbh/developer
