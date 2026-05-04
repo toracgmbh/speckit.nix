@@ -125,6 +125,7 @@
             packages = [
               virtualenv
               pkgs.uv
+              pkgs.just
             ];
             buildInputs = gitHooks.${system}.enabledPackages;
             env = {
