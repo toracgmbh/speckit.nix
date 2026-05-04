@@ -119,9 +119,8 @@
           pkgs = nixpkgs.legacyPackages.${system};
           pythonSet = pythonSets.${system};
           virtualenv = pythonSet.mkVirtualEnv "speckit-dev-env" workspace.deps.all;
-        in
-        {
-          default = pkgs.mkShell {
+          inherit (pkgs) mkShell;
+          commonShellAttributes = {
             packages = [
               virtualenv
               pkgs.uv
@@ -138,6 +137,15 @@
               ${gitHooks.${system}.shellHook}
             '';
           };
+        in
+        {
+          default = mkShell commonShellAttributes;
+          ci = mkShell (
+            commonShellAttributes
+            // {
+              SKIP = "no-commit-to-branch"; # Skip this check in CI
+            }
+          );
         }
       );
 
@@ -147,7 +155,7 @@
 
       checks = forAllSystems (system: {
         package = packages.${system}.default;
-        devShell = devShells.${system}.default;
+        devShell = devShells.${system}.ci;
         git-hooks = gitHooks.${system};
       });
 
