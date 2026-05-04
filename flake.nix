@@ -26,11 +26,17 @@
       url = "github:github/spec-kit";
       flake = false;
     };
+
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       nixpkgs,
+      nix-github-actions,
       pyproject-nix,
       uv2nix,
       pyproject-build-systems,
@@ -73,8 +79,6 @@
           )
       );
 
-    in
-    {
       devShells = forAllSystems (
         system:
         let
@@ -104,5 +108,18 @@
       packages = forAllSystems (system: {
         default = pythonSets.${system}.mkVirtualEnv "speckit-env" workspace.deps.default;
       });
+
+      checks = forAllSystems (system: {
+        package = packages.${system}.default;
+        devShell = devShells.${system}.default;
+      });
+
+    in
+    {
+      inherit devShells packages checks;
+
+      githubActions = nix-github-actions.lib.mkGithubMatrix {
+        checks = lib.getAttrs [ "x86_64-linux" "aarch64-darwin" ] checks;
+      };
     };
 }
