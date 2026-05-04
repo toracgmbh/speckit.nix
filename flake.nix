@@ -31,12 +31,18 @@
       url = "github:nix-community/nix-github-actions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       nixpkgs,
       nix-github-actions,
+      git-hooks,
       pyproject-nix,
       uv2nix,
       pyproject-build-systems,
@@ -79,6 +85,38 @@
           )
       );
 
+      gitHooks = forAllSystems (
+        system:
+        git-hooks.lib.${system}.run {
+          src = ./.;
+          default_stages = [
+            "pre-commit"
+            "pre-push"
+          ];
+          hooks = {
+            check-merge-conflicts.enable = true;
+            check-case-conflicts.enable = true;
+            mixed-line-endings.enable = true;
+            trim-trailing-whitespace.enable = true;
+            editorconfig-checker.enable = true;
+            no-commit-to-branch = {
+              enable = true;
+              settings.branch = [ "main" ];
+            };
+            commitizen.enable = true;
+            nixfmt.enable = true;
+            actionlint.enable = true;
+            check-yaml.enable = true;
+            deadnix = {
+              enable = true;
+              settings.noLambdaPatternNames = true;
+            };
+            nil.enable = true;
+            statix.enable = true;
+          };
+        }
+      );
+
       devShells = forAllSystems (
         system:
         let
@@ -92,6 +130,7 @@
               virtualenv
               pkgs.uv
             ];
+            buildInputs = gitHooks.${system}.enabledPackages;
             env = {
               UV_NO_SYNC = "1";
               UV_PYTHON = pythonSet.python.interpreter;
@@ -100,6 +139,7 @@
             shellHook = ''
               unset PYTHONPATH
               export REPO_ROOT=$(git rev-parse --show-toplevel)
+              ${gitHooks.${system}.shellHook}
             '';
           };
         }
@@ -112,6 +152,7 @@
       checks = forAllSystems (system: {
         package = packages.${system}.default;
         devShell = devShells.${system}.default;
+        git-hooks = gitHooks.${system};
       });
 
     in
@@ -119,7 +160,10 @@
       inherit devShells packages checks;
 
       githubActions = nix-github-actions.lib.mkGithubMatrix {
-        checks = lib.getAttrs [ "x86_64-linux" "aarch64-darwin" ] checks;
+        checks = lib.getAttrs [
+          "x86_64-linux"
+          "aarch64-darwin"
+        ] checks;
       };
     };
 }
