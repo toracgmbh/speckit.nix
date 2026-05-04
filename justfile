@@ -4,7 +4,7 @@ default:
 
 # Build devShell
 build_shell *args:
-    nix build ".#devShells.{{ shell("nix eval --impure --raw --expr 'builtins.currentSystem'") }}.default"
+    nix build ".#devShells.{{ shell("nix eval --impure --raw --expr 'builtins.currentSystem'") }}.default" {{ args }}
 
 # Update flake inputs
 update *args:
@@ -12,7 +12,7 @@ update *args:
 
 # Build the flake
 build *args:
-    nix build ".#"
+    nix build ".#" {{ args }}
 
 # Update, test and commit flake inputs
 update_automatic *args:
