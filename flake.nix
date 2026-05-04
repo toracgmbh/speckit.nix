@@ -64,10 +64,6 @@
         sourcePreference = "wheel";
       };
 
-      editableOverlay = workspace.mkEditablePyprojectOverlay {
-        root = "$REPO_ROOT";
-      };
-
       pythonSets = forAllSystems (
         system:
         let
@@ -121,7 +117,7 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-          pythonSet = pythonSets.${system}.overrideScope editableOverlay;
+          pythonSet = pythonSets.${system};
           virtualenv = pythonSet.mkVirtualEnv "speckit-dev-env" workspace.deps.all;
         in
         {
@@ -138,7 +134,6 @@
             };
             shellHook = ''
               unset PYTHONPATH
-              export REPO_ROOT=$(git rev-parse --show-toplevel)
               ${gitHooks.${system}.shellHook}
             '';
           };
