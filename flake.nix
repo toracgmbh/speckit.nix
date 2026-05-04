@@ -41,7 +41,12 @@
       inherit (nixpkgs) lib;
       forAllSystems = lib.genAttrs lib.systems.flakeExposed;
 
-      workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = speckit; };
+      # uvLock is supplied separately from ./uv.lock so that speckit can be
+      # used as a plain locked flake input without patching, avoiding IFD.
+      workspace = uv2nix.lib.workspace.loadWorkspace {
+        workspaceRoot = speckit;
+        uvLock = lib.importTOML ./uv.lock;
+      };
 
       overlay = workspace.mkPyprojectOverlay {
         sourcePreference = "wheel";
