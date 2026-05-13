@@ -1,5 +1,5 @@
 {
-  description = "SpecKit wrapped with uv2nix";
+  description = "Spec Kitty wrapped with uv2nix";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -22,8 +22,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    speckit = {
-      url = "github:github/spec-kit";
+    spec-kitty = {
+      url = "github:Priivacy-ai/spec-kitty";
       flake = false;
     };
 
@@ -46,18 +46,15 @@
       pyproject-nix,
       uv2nix,
       pyproject-build-systems,
-      speckit,
+      spec-kitty,
       ...
     }:
     let
       inherit (nixpkgs) lib;
       forAllSystems = lib.genAttrs lib.systems.flakeExposed;
 
-      # uvLock is supplied separately from ./uv.lock so that speckit can be
-      # used as a plain locked flake input without patching, avoiding IFD.
       workspace = uv2nix.lib.workspace.loadWorkspace {
-        workspaceRoot = speckit;
-        uvLock = lib.importTOML ./uv.lock;
+        workspaceRoot = spec-kitty;
       };
 
       overlay = workspace.mkPyprojectOverlay {
@@ -118,7 +115,7 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
           pythonSet = pythonSets.${system};
-          virtualenv = pythonSet.mkVirtualEnv "speckit-dev-env" workspace.deps.all;
+          virtualenv = pythonSet.mkVirtualEnv "spec-kitty-dev-env" workspace.deps.all;
           inherit (pkgs) mkShell;
           commonShellAttributes = {
             packages = [
@@ -150,7 +147,7 @@
       );
 
       packages = forAllSystems (system: {
-        default = pythonSets.${system}.mkVirtualEnv "speckit-env" workspace.deps.default;
+        default = pythonSets.${system}.mkVirtualEnv "spec-kitty-env" workspace.deps.default;
       });
 
       checks = forAllSystems (system: {

@@ -148,23 +148,23 @@
         "nixpkgs": "nixpkgs",
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",
-        "speckit": "speckit",
+        "spec-kitty": "spec-kitty",
         "uv2nix": "uv2nix"
       }
     },
-    "speckit": {
+    "spec-kitty": {
       "flake": false,
       "locked": {
-        "lastModified": 1777670299,
-        "narHash": "sha256-GpsmaNaT7aCag7FPkCTUrJhMdErBcJG3GvdWKFCzoxw=",
-        "owner": "github",
-        "repo": "spec-kit",
-        "rev": "259494a328e13df32e18b2df31abd421c881c071",
+        "lastModified": 1778655461,
+        "narHash": "sha256-mVxX52Py4nBCGz52ds+sx7rj0fbC7sCDSIlKa/wKOvY=",
+        "owner": "Priivacy-ai",
+        "repo": "spec-kitty",
+        "rev": "bfcaf2043a802ae3498325df8ff7c8b6d754c29b",
         "type": "github"
       },
       "original": {
-        "owner": "github",
-        "repo": "spec-kit",
+        "owner": "Priivacy-ai",
+        "repo": "spec-kitty",
         "type": "github"
       }
     },
